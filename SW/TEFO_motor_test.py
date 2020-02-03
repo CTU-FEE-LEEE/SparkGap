@@ -5,7 +5,7 @@
 
 #uncomment for debbug purposes
 #import logging
-#logging.basicConfig(level=logging.DEBUG) 
+#logging.basicConfig(level=logging.DEBUG)
 
 import sys
 import time
@@ -24,13 +24,13 @@ class axis:
         ' Reset Axis and set default parameters for H-bridge '
         spi.SPI_write_byte(self.CS, 0xC0)      # reset
 #        spi.SPI_write_byte(self.CS, 0x14)      # Stall Treshold setup
-#        spi.SPI_write_byte(self.CS, 0xFF)  
-#        spi.SPI_write_byte(self.CS, 0x13)      # Over Current Treshold setup 
-#        spi.SPI_write_byte(self.CS, 0xFF)  
-        spi.SPI_write_byte(self.CS, 0x15)      # Full Step speed 
+#        spi.SPI_write_byte(self.CS, 0xFF)
+#        spi.SPI_write_byte(self.CS, 0x13)      # Over Current Treshold setup
+#        spi.SPI_write_byte(self.CS, 0xFF)
+        spi.SPI_write_byte(self.CS, 0x15)      # Full Step speed
         spi.SPI_write_byte(self.CS, 0x00)
         spi.SPI_write_byte(self.CS, 0xF0)
- 
+
         spi.SPI_write_byte(self.CS, 0x09)      # KVAL_HOLD
         spi.SPI_write_byte(self.CS, 0xFF)
 
@@ -43,28 +43,28 @@ class axis:
 #        spi.SPI_write_byte(self.CS, 0x18)      # Config register
 #        spi.SPI_write_byte(self.CS, 0b11000000)
 #        spi.SPI_write_byte(self.CS, 0x88)
-      
+
     def MaxSpeed(self, speed):
         ' Setup of maximum speed '
-        spi.SPI_write_byte(self.CS, 0x07)       # Max Speed setup 
+        spi.SPI_write_byte(self.CS, 0x07)       # Max Speed setup
         spi.SPI_write_byte(self.CS, 0x00)
-        spi.SPI_write_byte(self.CS, speed)  
+        spi.SPI_write_byte(self.CS, speed)
 
     def ReleaseSW(self):
         ' Go away from Limit Switch '
         while self.ReadStatusBit(2) == 1:           # is Limit Switch ON ?
-            spi.SPI_write_byte(self.CS, 0x92 | (~self.Dir & 1))     # release SW 
+            spi.SPI_write_byte(self.CS, 0x92 | (~self.Dir & 1))     # release SW
             while self.IsBusy():
                 pass
             self.MoveWait(10)           # move 10 units away
- 
+
     def GoZero(self, speed):
         ' Go to Zero position '
         self.ReleaseSW()
 
         spi.SPI_write_byte(self.CS, 0x82 | (self.Dir & 1))       # Go to Zero
         spi.SPI_write_byte(self.CS, 0x00)
-        spi.SPI_write_byte(self.CS, speed)  
+        spi.SPI_write_byte(self.CS, speed)
         while self.IsBusy():
             pass
         time.sleep(0.3)
@@ -72,12 +72,12 @@ class axis:
 
     def Move(self, units):
         ' Move some distance units from current position '
-        steps = units * self.SPU  # translate units to steps 
+        steps = units * self.SPU  # translate units to steps
         if steps > 0:                                          # look for direction
-            spi.SPI_write_byte(self.CS, 0x40 | (~self.Dir & 1))       
+            spi.SPI_write_byte(self.CS, 0x40 | (~self.Dir & 1))
         else:
-            spi.SPI_write_byte(self.CS, 0x40 | (self.Dir & 1)) 
-        steps = int(abs(steps))     
+            spi.SPI_write_byte(self.CS, 0x40 | (self.Dir & 1))
+        steps = int(abs(steps))
         spi.SPI_write_byte(self.CS, (steps >> 16) & 0xFF)
         spi.SPI_write_byte(self.CS, (steps >> 8) & 0xFF)
         spi.SPI_write_byte(self.CS, steps & 0xFF)
@@ -103,10 +103,10 @@ class axis:
         if bit > 7:                                   # extract requested bit
             OutputBit = (data0 >> (bit - 8)) & 1
         else:
-            OutputBit = (data1 >> bit) & 1        
+            OutputBit = (data1 >> bit) & 1
         return OutputBit
 
-    
+
     def IsBusy(self):
         """ Return True if tehre are motion """
         if self.ReadStatusBit(1) == 1:
@@ -120,17 +120,11 @@ class axis:
 
 cfg = config.Config(
     i2c = {
-        "port": 1,
+        "port": 12,
     },
 
     bus = [
-        {
-            "type": "i2chub",
-            "address": 0x70,
-            "children": [
                 { "name":"spi", "type":"i2cspi", "channel": 1, },
-            ],
-        },
     ],
 )
 
@@ -150,7 +144,7 @@ try:
 
     print "Axis inicialization"
     X = axis(spi.I2CSPI_SS0, 0, 641)    # set Number of Steps per axis Unit and set Direction of Rotation
-    X.MaxSpeed(2)                      # set maximal motor speed 
+    X.MaxSpeed(2)                      # set maximal motor speed
 
     print "Axis is running"
 
@@ -165,3 +159,4 @@ try:
 
 finally:
     print "stop"
+    X.Float()   # release power
