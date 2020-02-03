@@ -6,8 +6,8 @@
         	"serial": "00AC4F3E"
         },
         "bus": [
-            { 
-            "name":"spi", 
+            {
+            "name":"spi",
             "type":"i2cspi"
             },
             {
@@ -19,10 +19,11 @@
 	"tefo":{
 		"dir": 0,
 		"kval": 0.1,
-		"lenght": 100300,
-		"home": 1650,
+		"StepsPermm": 1000,
+		"lenght": 300,
+		"home": 50,
 		"speed": 500,
-		"home_speed": 200 
+		"home_speed": 200
 	},
 	"connection":{
 		"ip": "127.0.0.1",

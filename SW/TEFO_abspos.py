@@ -15,7 +15,7 @@ class focuser():
 
     def __init__(self):
 
-        config_file = 'focuser.json'
+        config_file = 'sparkgap.json'
         if len(sys.argv) == 2:
             config_file = sys.argv[1]
 
@@ -38,7 +38,7 @@ class focuser():
 
         spi.SPI_config(spi.I2CSPI_MSB_FIRST| spi.I2CSPI_MODE_CLK_IDLE_HIGH_DATA_EDGE_TRAILING| spi.I2CSPI_CLK_461kHz)
 
-        self.motor = axis.axis(SPI = spi, SPI_CS = spi.I2CSPI_SS0, StepsPerUnit=1)
+        self.motor = axis.axis(SPI = spi, SPI_CS = spi.I2CSPI_SS0, StepsPerUnit=tefo_conf['tefo']['StepsPermm'])
 
         # Transition to newer axis class
         kvals = tefo_conf['tefo']['kval']
