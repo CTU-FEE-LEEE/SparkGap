@@ -58,13 +58,15 @@ class focuser():
         self.motor.MaxSpeed(self.tefo_conf['tefo']['speed'])
         print self.motor.getStatus()
         print "Zacatek kalibrace"
-        self.motor.GoUntil( direction = 1, speed = self.tefo_conf['tefo']['home_speed'], ACT = True)
+        self.motor.GoUntil( direction = False, speed = self.tefo_conf['tefo']['home_speed'], ACT = True)
         self.motor.Wait()
-        self.motor.ReleaseSW(direction = 0)
-
-        self.motor.getStatus()
-        
+        self.motor.ReleaseSW(direction = True)
+        self.motor.Wait()
         print('Move na koncak dokoncen')
+
+        print self.motor.getStatus()
+
+        print('Dojezd na pozici')
 
         self.motor.GoTo(pos, wait=True)
         self.motor.Wait()
