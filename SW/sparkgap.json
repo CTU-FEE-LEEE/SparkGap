@@ -22,8 +22,8 @@
 		"StepsPermm": 1000,
 		"lenght": 300,
 		"home": 50,
-		"speed": 500,
-		"home_speed": 200
+		"speed": 1000,
+		"home_speed": 500
 	},
 	"connection":{
 		"ip": "127.0.0.1",
